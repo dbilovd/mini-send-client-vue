@@ -104,25 +104,24 @@ const Dashboard = {
       return ((value / this.stats.total) * 100).toFixed(2);
     },
 
-    fetchStats() {
+    async fetchStats() {
       this.isFetchingStats = true;
-      this.$api
-        .fetchStats()
-        .then((stats) => {
-          this.isFetchingStats = false;
-          if (stats) {
-            this.stats.total = stats.total;
-            this.stats.pending = stats.pending;
-            this.stats.sent = stats.sent;
-            this.stats.failed = stats.failed;
-            this.stats.updatedAt = stats.updatedAt;
-          }
-        })
-        .catch((err) => {
-          this.isFetchingStats = false;
-          alert('An error occurred while fetching stats. Kindly refresh the page and try again.');
-          console.log(err);
-        });
+
+      try {
+        const stats = await this.$api.fetchStats();
+        if (stats) {
+          this.stats.total = stats.total;
+          this.stats.pending = stats.pending;
+          this.stats.sent = stats.sent;
+          this.stats.failed = stats.failed;
+          this.stats.updatedAt = stats.updatedAt;
+        }
+      } catch (error) {
+        alert('An error occurred while fetching stats. Kindly refresh the page and try again.');
+        console.log(error);
+      }
+
+      this.isFetchingStats = false;
     },
   },
 };
